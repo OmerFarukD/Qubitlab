@@ -3,10 +3,9 @@ using Qubitlab.CrossCuttingConcerns.Exceptions.Handlers;
 
 namespace Qubitlab.CrossCuttingConcerns.Exceptions.Middlewares;
 
-public class ExceptionMiddleware(RequestDelegate next, IHttpContextAccessor httpContextAccessor)
+public class ExceptionMiddleware(RequestDelegate next)
 {
     private readonly HttpExceptionHandler _exceptionHandler = new();
-    private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
 
 
     public async Task Invoke(HttpContext httpContext)

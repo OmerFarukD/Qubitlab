@@ -7,12 +7,12 @@ namespace Qubitlab.CrossCuttingConcerns.Exceptions.Handlers;
 
 public class HttpExceptionHandler : ExceptionHandler
 {
-    private HttpResponse response;
+    private HttpResponse? _response;
 
     public HttpResponse Response
     {
-        get => response ?? throw new ArgumentNullException(nameof(response));
-        set => response = value;
+        get => _response ?? throw new InvalidOperationException("Response must be set before handling exceptions.");
+        set => _response = value;
     }
 
     protected override Task HandleException(AuthorizationException authorizationException)
@@ -51,7 +51,7 @@ public class HttpExceptionHandler : ExceptionHandler
     protected override Task HandleException(Exception exception)
     {
         Response.StatusCode = StatusCodes.Status500InternalServerError;
-        var details = new InternalServerErrorProblemDetails(exception.Message);
+        var details = new InternalServerErrorProblemDetails();
         var json = JsonSerializer.Serialize(details);
         return Response.WriteAsync(json);
     }

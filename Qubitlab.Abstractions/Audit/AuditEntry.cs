@@ -1,6 +1,6 @@
 ﻿namespace Qubitlab.Abstractions.Audit;
 
-public class AuditEntry
+public sealed class AuditEntry
 {
     public string EntityName { get; init; } = default!;
     public string Action { get; init; } = default!;

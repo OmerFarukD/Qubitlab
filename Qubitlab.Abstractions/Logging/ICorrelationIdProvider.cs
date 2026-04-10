@@ -1,6 +1,6 @@
 ﻿namespace Qubitlab.Abstractions.Logging;
 
-public interface ICorrelationProvider
+public interface ICorrelationIdProvider
 {
     string CorrelationId { get; }
     void Set(string correlationId);
