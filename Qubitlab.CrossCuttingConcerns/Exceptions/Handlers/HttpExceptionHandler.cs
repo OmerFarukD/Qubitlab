@@ -50,7 +50,7 @@ public class HttpExceptionHandler : ExceptionHandler
 
     protected override Task HandleException(Exception exception)
     {
-        Response.StatusCode = StatusCodes.Status400BadRequest;
+        Response.StatusCode = StatusCodes.Status500InternalServerError;
         var details = new InternalServerErrorProblemDetails(exception.Message);
         var json = JsonSerializer.Serialize(details);
         return Response.WriteAsync(json);

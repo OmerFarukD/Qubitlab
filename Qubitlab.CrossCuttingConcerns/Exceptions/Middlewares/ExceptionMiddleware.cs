@@ -25,7 +25,7 @@ public class ExceptionMiddleware(RequestDelegate next, IHttpContextAccessor http
     
     private Task HandleExceptionAsync(HttpResponse response, Exception exception)
     {
-        response.ContentType = "application/json";
+        response.ContentType = "application/problem+json";
         _exceptionHandler.Response = response;
         return _exceptionHandler.HandleExceptionAsync(exception);
     }
