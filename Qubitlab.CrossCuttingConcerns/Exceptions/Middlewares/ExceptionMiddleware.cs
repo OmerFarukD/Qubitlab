@@ -1,0 +1,32 @@
+﻿using Microsoft.AspNetCore.Http;
+using Qubitlab.CrossCuttingConcerns.Exceptions.Handlers;
+
+namespace Qubitlab.CrossCuttingConcerns.Exceptions.Middlewares;
+
+public class ExceptionMiddleware(RequestDelegate next, IHttpContextAccessor httpContextAccessor)
+{
+    private readonly HttpExceptionHandler _exceptionHandler = new();
+    private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
+
+
+    public async Task Invoke(HttpContext httpContext)
+    {
+        try
+        {
+            await next(httpContext);
+        }
+        catch (Exception e)
+        {
+         
+            await HandleExceptionAsync(httpContext.Response, e);
+        }
+
+    }
+    
+    private Task HandleExceptionAsync(HttpResponse response, Exception exception)
+    {
+        response.ContentType = "application/json";
+        _exceptionHandler.Response = response;
+        return _exceptionHandler.HandleExceptionAsync(exception);
+    }
+}
