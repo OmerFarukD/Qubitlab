@@ -6,27 +6,23 @@
         <Nullable>enable</Nullable>
 
         <!-- NuGet Metadata -->
-        <PackageId>Qubitlab.CrossCuttingConcerns</PackageId>
+        <PackageId>Qubitlab.Caching.InMemory</PackageId>
         <Version>1.0.0</Version>
         <Authors>Qubitlab</Authors>
-        <Description>Global exception handling middleware and RFC 7807 ProblemDetails for ASP.NET Core applications.</Description>
-        <PackageTags>qubitlab exception middleware problemdetails aspnetcore</PackageTags>
+        <Description>In-memory cache implementation of ICacheService for the Qubitlab ecosystem. Built on Microsoft.Extensions.Caching.Memory.</Description>
+        <PackageTags>qubitlab cache inmemory caching dotnet</PackageTags>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
-        <RepositoryUrl>https://github.com/qubitlab/qubitlab</RepositoryUrl>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <NoWarn>$(NoWarn);CS1591</NoWarn>
     </PropertyGroup>
-
-    <ItemGroup>
-        <FrameworkReference Include="Microsoft.AspNetCore.App" />
-    </ItemGroup>
 
     <ItemGroup>
         <ProjectReference Include="..\Qubitlab.Abstractions\Qubitlab.Abstractions.csproj" />
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Caching\" />
+        <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="10.0.0" />
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="10.0.0" />
     </ItemGroup>
 
 </Project>

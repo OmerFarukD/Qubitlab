@@ -1,4 +1,4 @@
-﻿namespace Qubitlab.Abstractions.Audit;
+﻿namespace Qubitlab.Persistence.EFCore.Entities;
 
 public interface IAuditableEntity
 {
