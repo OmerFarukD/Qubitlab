@@ -1,9 +1,36 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
         <TargetFramework>net10.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
+
+        <!-- NuGet Metadata -->
+        <PackageId>Qubitlab.Caching.Hybrid</PackageId>
+        <Version>1.0.0</Version>
+        <Authors>Qubitlab</Authors>
+        <Description>
+            HybridCache implementation of ICacheService for the Qubitlab ecosystem.
+            L1 (in-process IMemoryCache) + L2 (Redis IDistributedCache) with stampede protection.
+            Requires .NET 9 or later.
+        </Description>
+        <PackageTags>qubitlab cache hybrid redis inmemory l1 l2 dotnet</PackageTags>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
+        <NoWarn>$(NoWarn);CS1591</NoWarn>
     </PropertyGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\Qubitlab.Abstractions\Qubitlab.Abstractions.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <!-- .NET 9+ HybridCache API -->
+        <PackageReference Include="Microsoft.Extensions.Caching.Hybrid" Version="9.3.0" />
+        <!-- L2 — Redis backend -->
+        <PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="10.0.0" />
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="10.0.0" />
+        <PackageReference Include="Microsoft.Extensions.Options" Version="10.0.0" />
+    </ItemGroup>
 
 </Project>
