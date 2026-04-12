@@ -1,0 +1,57 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net10.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+
+        <!-- NuGet Metadata -->
+        <PackageId>Qubitlab.Identity</PackageId>
+        <Version>1.0.0</Version>
+        <Authors>Qubitlab</Authors>
+        <Description>
+            User, Role and RefreshToken entity definitions with EF Core configurations
+            for the Qubitlab ecosystem. Depends on Qubitlab.Security for contracts.
+        </Description>
+        <PackageTags>qubitlab identity user role jwt efcore authentication dotnet</PackageTags>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
+        <NoWarn>$(NoWarn);CS1591</NoWarn>
+    </PropertyGroup>
+
+    <!--
+        Proje Referansları:
+        - Abstractions  → ICacheService, temel kontratlar
+        - Security      → IRefreshTokenRepository, RefreshToken modeli
+        - EFCore        → Entity<TId>, IAuditableEntity, ISoftDeletable, QubitlabDbContext
+    -->
+    <ItemGroup>
+        <ProjectReference Include="..\Qubitlab.Abstractions\Qubitlab.Abstractions.csproj" />
+        <ProjectReference Include="..\Qubitlab.Security\Qubitlab.Security.csproj" />
+        <ProjectReference Include="..\Qubitlab.Persistence.EFCore\Qubitlab.Persistence.EFCore.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <!--
+            EF Core çekirdek — DbContext, DbSet, entity konfigürasyonu
+        -->
+        <PackageReference Include="Microsoft.EntityFrameworkCore" Version="10.0.0" />
+
+        <!--
+            Relational — ToTable(), HasIndex(), GetTableName() vb.
+        -->
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="10.0.0" />
+
+        <!-- IServiceCollection, IOptions<T> -->
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="10.0.0" />
+        <PackageReference Include="Microsoft.Extensions.Options" Version="10.0.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Configurations\" />
+      <Folder Include="Entities\" />
+      <Folder Include="Extensions\" />
+      <Folder Include="Repositories\" />
+    </ItemGroup>
+
+</Project>

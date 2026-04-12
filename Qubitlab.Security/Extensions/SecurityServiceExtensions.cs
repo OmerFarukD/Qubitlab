@@ -1,14 +1,15 @@
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using Qubitlab.Abstractions.Security;
 using Qubitlab.Security.Hashing;
 using Qubitlab.Security.Jwt;
 using Qubitlab.Security.RefreshToken;
 using Qubitlab.Security.Revocation;
+using Qubitlab.Security.Services;
 
 namespace Qubitlab.Security.Extensions;
 
@@ -97,6 +98,11 @@ public static class SecurityServiceExtensions
             // (AddQubitlabInMemoryCache / AddQubitlabRedisCache / AddQubitlabHybridCache)
             services.AddSingleton<ITokenRevocationService, CacheTokenRevocationService>();
         }
+
+        // ── Current User Service ───────────────────────────
+        // IHttpContextAccessor — HttpContext'ten claim okumak için şart
+        services.AddHttpContextAccessor();
+        services.AddScoped<ICurrentUserService, HttpContextCurrentUserService>();
 
         return services;
     }
