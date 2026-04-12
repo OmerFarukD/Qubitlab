@@ -1,0 +1,63 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net10.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+
+        <!-- NuGet Metadata -->
+        <PackageId>Qubitlab.Security</PackageId>
+        <Version>1.0.0</Version>
+        <Authors>Qubitlab</Authors>
+        <Description>
+            JWT token creation/validation, password hashing, refresh token management
+            and token revocation (blacklist) for the Qubitlab ecosystem.
+        </Description>
+        <PackageTags>qubitlab security jwt authentication hashing refresh-token dotnet</PackageTags>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
+        <NoWarn>$(NoWarn);CS1591</NoWarn>
+    </PropertyGroup>
+
+    <!-- Qubitlab.Abstractions — ICacheService (token blacklist için) -->
+    <ItemGroup>
+        <ProjectReference Include="..\Qubitlab.Abstractions\Qubitlab.Abstractions.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <!--
+            JWT Bearer middleware — AddAuthentication().AddJwtBearer()
+            UseAuthentication() pipeline'ı için şart
+        -->
+        <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.0.0" />
+
+        <!--
+            JWT token üretme ve doğrulama — JwtSecurityTokenHandler, SecurityTokenDescriptor
+            JwtBearer paketi bunu zaten içeriyor ama explicit belirtmek iyi pratik
+        -->
+        <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.7.0" />
+
+        <!--
+            BCrypt password hashing — BCrypt.Net.BCrypt.HashPassword / Verify
+            workFactor:12 → güvenli, performanslı
+        -->
+        <PackageReference Include="BCrypt.Net-Next" Version="4.0.3" />
+
+        <!-- IServiceCollection, IOptions<T> -->
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="10.0.0" />
+        <PackageReference Include="Microsoft.Extensions.Options" Version="10.0.0" />
+
+        <!-- IHttpContextAccessor — middleware'de token okumak için -->
+        <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.3.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Extensions\" />
+      <Folder Include="Hashing\" />
+      <Folder Include="Jwt\" />
+      <Folder Include="Middleware\" />
+      <Folder Include="RefreshToken\" />
+      <Folder Include="Revocation\" />
+    </ItemGroup>
+
+</Project>

@@ -14,6 +14,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Qubitlab.Caching.Redis", "Q
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Qubitlab.Caching.Hybrid", "Qubitlab.Caching.Hybrid\Qubitlab.Caching.Hybrid.csproj", "{D9BEBC34-1711-4817-9256-45EFC699D6C1}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Qubitlab.Security", "Qubitlab.Security\Qubitlab.Security.csproj", "{2AB33FC8-07AF-4D79-9039-3332EC4411A7}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -48,5 +50,9 @@ Global
 		{D9BEBC34-1711-4817-9256-45EFC699D6C1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D9BEBC34-1711-4817-9256-45EFC699D6C1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D9BEBC34-1711-4817-9256-45EFC699D6C1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2AB33FC8-07AF-4D79-9039-3332EC4411A7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2AB33FC8-07AF-4D79-9039-3332EC4411A7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2AB33FC8-07AF-4D79-9039-3332EC4411A7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2AB33FC8-07AF-4D79-9039-3332EC4411A7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
