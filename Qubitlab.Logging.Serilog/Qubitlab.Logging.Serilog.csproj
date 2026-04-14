@@ -1,0 +1,51 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net10.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+
+        <!-- NuGet Metadata -->
+        <PackageId>Qubitlab.Logging.Serilog</PackageId>
+        <Version>1.0.0</Version>
+        <Authors>Qubitlab</Authors>
+        <Description>
+            Serilog tabanlı structured logging implementasyonu.
+            IAppLogger&lt;T&gt; bağlayarak CorrelationId, UserId ve TenantId
+            zenginleştirmeyi otomatik sağlar. Console, File ve Seq sink
+            desteği built-in gelir.
+        </Description>
+        <PackageTags>qubitlab logging serilog structured aspnetcore</PackageTags>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
+        <RepositoryUrl>https://github.com/qubitlab/qubitlab</RepositoryUrl>
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
+        <NoWarn>$(NoWarn);CS1591</NoWarn>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <!-- Serilog çekirdeği ve ASP.NET Core entegrasyonu -->
+        <PackageReference Include="Serilog" Version="4.2.0" />
+        <PackageReference Include="Serilog.AspNetCore" Version="9.0.0" />
+        <PackageReference Include="Serilog.Extensions.Hosting" Version="9.0.0" />
+
+        <!-- Enricher'lar -->
+        <PackageReference Include="Serilog.Enrichers.Environment" Version="3.0.1" />
+        <PackageReference Include="Serilog.Enrichers.Thread" Version="4.0.0" />
+
+        <!-- Sink'ler -->
+        <PackageReference Include="Serilog.Sinks.Console" Version="6.0.0" />
+        <PackageReference Include="Serilog.Sinks.File" Version="6.0.0" />
+
+        <!-- Compact JSON formatter (CLEF formatı — Seq, Loki uyumlu) -->
+        <PackageReference Include="Serilog.Formatting.Compact" Version="3.0.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <FrameworkReference Include="Microsoft.AspNetCore.App" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\Qubitlab.Abstractions\Qubitlab.Abstractions.csproj" />
+    </ItemGroup>
+
+</Project>

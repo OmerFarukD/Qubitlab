@@ -1,0 +1,42 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net10.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+
+        <!-- NuGet Metadata -->
+        <PackageId>Qubitlab.Logging.EFCore</PackageId>
+        <Version>1.0.0</Version>
+        <Authors>Qubitlab</Authors>
+        <Description>
+            EF Core tabanlı Serilog sink implementasyonu.
+            Uygulama loglarını herhangi bir EF Core destekli veritabanına
+            (SQL Server, PostgreSQL, SQLite, MySQL...) yazar.
+            Batch yazma, otomatik retry ve yapılandırılabilir tablo desteği içerir.
+        </Description>
+        <PackageTags>qubitlab logging serilog efcore database sink aspnetcore</PackageTags>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
+        <RepositoryUrl>https://github.com/qubitlab/qubitlab</RepositoryUrl>
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
+        <NoWarn>$(NoWarn);CS1591</NoWarn>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <!-- Serilog çekirdeği ve periodic batching -->
+        <PackageReference Include="Serilog" Version="4.2.0" />
+        <PackageReference Include="Serilog.Sinks.PeriodicBatching" Version="5.0.0" />
+
+        <!-- EF Core — provider bağımsız -->
+        <PackageReference Include="Microsoft.EntityFrameworkCore" Version="10.0.0" />
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="10.0.0" />
+        <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="10.0.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <!-- Qubitlab ekosistemi -->
+        <ProjectReference Include="..\Qubitlab.Persistence.EFCore\Qubitlab.Persistence.EFCore.csproj" />
+        <ProjectReference Include="..\Qubitlab.Logging.Serilog\Qubitlab.Logging.Serilog.csproj" />
+    </ItemGroup>
+
+</Project>
