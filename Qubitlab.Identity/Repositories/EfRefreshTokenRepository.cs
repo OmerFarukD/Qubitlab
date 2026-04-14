@@ -58,8 +58,16 @@ public class EfRefreshTokenRepository<TToken> : IRefreshTokenRepository
         if (!Guid.TryParse(token.UserId, out var guidId))
             throw new ArgumentException("UserId geçerli bir Guid değil.", nameof(token));
 
-        // IdentityRefreshToken.FromPoco() → TToken'a cast
-        var entity = (TToken)IdentityRefreshToken.FromPoco(token, guidId);
+        var entity = new TToken
+        {
+            Id             = Guid.NewGuid(),
+            Token          = token.Token,
+            UserId         = guidId,
+            ExpiresAt      = token.ExpiresAt,
+            IsRevoked      = token.IsRevoked,
+            IsUsed         = token.IsUsed,
+            AccessTokenJti = token.AccessTokenJti
+        };
         await _tokens.AddAsync(entity, ct);
         await _context.SaveChangesAsync(ct);
     }

@@ -76,7 +76,6 @@ public sealed class CachingBehavior<TRequest, TResponse>
                     ?? CacheGroup.Empty();
 
         group.Keys.Add(cacheKey);
-
         // Gruptaki en uzun expiration'ı ticks olarak takip et
         var newTicks = slidingExpiration.Ticks > group.MaxSlidingExpirationTicks
             ? slidingExpiration.Ticks
@@ -106,11 +105,9 @@ public sealed class CachingBehavior<TRequest, TResponse>
 /// <param name="MaxSlidingExpirationTicks">
 ///     Gruptaki key'lerin maksimum sliding expiration süresi (TimeSpan.Ticks cinsinden).
 /// </param>
-internal sealed record CacheGroup(HashSet<string> Keys, long MaxSlidingExpirationTicks)
+internal sealed record CacheGroup(List<string> Keys, long MaxSlidingExpirationTicks)
 {
-    /// <summary>MaxSlidingExpirationTicks değerini TimeSpan olarak döndürür.</summary>
     public TimeSpan MaxSlidingExpiration => TimeSpan.FromTicks(MaxSlidingExpirationTicks);
 
-    /// <summary>TimeSpan'den CacheGroup oluşturmak için factory.</summary>
     public static CacheGroup Empty() => new([], 0L);
 }

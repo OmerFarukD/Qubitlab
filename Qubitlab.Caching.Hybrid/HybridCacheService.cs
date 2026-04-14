@@ -33,16 +33,19 @@ public sealed class HybridCacheService : ICacheService
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(key);
 
-        // HybridCache.GetOrCreateAsync'i "no-op factory" ile çağırmak yerine
-        // TryGetValue yok — GetOrCreateAsync ile "eğer yoksa default döndür" pattern'ı kullanılır.
-        // Bu amaçla bir sentinel kullanıyoruz.
+        // HybridCache'in TryGetValue API'si yoktur — yalnızca GetOrCreateAsync vardır.
+        // Cache miss durumunda factory sonucunu cache'e YAZMAMAK için
+        // HybridCacheEntryFlags.DisableLocalCacheWrite | DisableDistributedCacheWrite
+        // kullanılır. Böylece null değer kalıcı olarak cache'lenmez.
         var result = await _hybridCache.GetOrCreateAsync<T?>(
             key,
-            _ => ValueTask.FromResult(default(T?)),   // factory: cache miss → null
+            _ => ValueTask.FromResult(default(T?)),
             new HybridCacheEntryOptions
             {
                 Expiration              = _options.DefaultDistributedExpiration,
-                LocalCacheExpiration    = _options.DefaultLocalExpiration
+                LocalCacheExpiration    = _options.DefaultLocalExpiration,
+                Flags                   = HybridCacheEntryFlags.DisableLocalCacheWrite
+                                          | HybridCacheEntryFlags.DisableDistributedCacheWrite
             },
             cancellationToken: cancellationToken
         ).ConfigureAwait(false);

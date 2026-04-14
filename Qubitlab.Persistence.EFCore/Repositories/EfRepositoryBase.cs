@@ -22,7 +22,6 @@ public class EfRepositoryBase<TEntity, TId, TContext> : IAsyncRepository<TEntity
 
     public TEntity Add(TEntity entity)
     {
-        entity.CreatedTime = DateTime.UtcNow;
         Context.Entry(entity).State = EntityState.Added;
         
         if (_autoSaveChanges)
@@ -33,9 +32,6 @@ public class EfRepositoryBase<TEntity, TId, TContext> : IAsyncRepository<TEntity
 
     public ICollection<TEntity> AddRange(ICollection<TEntity> entities)
     {
-        foreach (TEntity entity in entities)
-            entity.CreatedTime = DateTime.UtcNow;
-        
         Context.AddRange(entities);
         
         if (_autoSaveChanges)
@@ -46,7 +42,6 @@ public class EfRepositoryBase<TEntity, TId, TContext> : IAsyncRepository<TEntity
 
     public TEntity Update(TEntity entity)
     {
-        entity.UpdatedTime = DateTime.UtcNow;
         Context.Entry(entity).State = EntityState.Modified;
         
         if (_autoSaveChanges)
@@ -261,7 +256,6 @@ public class EfRepositoryBase<TEntity, TId, TContext> : IAsyncRepository<TEntity
 
     public async Task<TEntity> AddAsync(TEntity entity, CancellationToken cancellationToken = default)
     {
-        entity.CreatedTime = DateTime.UtcNow;
         Context.Entry(entity).State = EntityState.Added;
         
         if (_autoSaveChanges)
@@ -272,9 +266,6 @@ public class EfRepositoryBase<TEntity, TId, TContext> : IAsyncRepository<TEntity
 
     public async Task<ICollection<TEntity>> AddRangeAsync(ICollection<TEntity> entities, CancellationToken cancellationToken = default)
     {
-        foreach (TEntity entity in entities)
-            entity.CreatedTime = DateTime.UtcNow;
-        
         await Context.AddRangeAsync(entities, cancellationToken);
         
         if (_autoSaveChanges)
@@ -285,7 +276,6 @@ public class EfRepositoryBase<TEntity, TId, TContext> : IAsyncRepository<TEntity
 
     public async Task<TEntity> UpdateAsync(TEntity entity, CancellationToken cancellationToken = default)
     {
-        entity.UpdatedTime = DateTime.UtcNow;
         Context.Entry(entity).State = EntityState.Modified;
         
         if (_autoSaveChanges)

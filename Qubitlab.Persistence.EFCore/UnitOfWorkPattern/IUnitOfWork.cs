@@ -2,7 +2,7 @@
 
 namespace Qubitlab.Persistence.EFCore.UnitOfWorkPattern;
 
-public interface IUnitOfWork
+public interface IUnitOfWork : IDisposable
 {
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
     Task<IDbContextTransaction> BeginTransactionAsync(CancellationToken cancellationToken = default);

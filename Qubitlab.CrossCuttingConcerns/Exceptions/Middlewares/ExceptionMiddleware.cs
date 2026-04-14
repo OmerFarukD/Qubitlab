@@ -20,8 +20,6 @@ public sealed class ExceptionMiddleware(
     IAppLogger<ExceptionMiddleware> logger,
     ICorrelationIdProvider correlationIdProvider)
 {
-    private readonly HttpExceptionHandler _exceptionHandler = new();
-
     public async Task InvokeAsync(HttpContext httpContext)
     {
         try
@@ -35,7 +33,7 @@ public sealed class ExceptionMiddleware(
 
             logger.LogError(
                 ex,
-                "✗ [{CorrelationId}] İşlenmeyen hata: {ExceptionType} — {Message}",
+                "[{CorrelationId}] Unhandled exception: {ExceptionType} — {Message}",
                 correlationId, exceptionType, ex.Message);
 
             await HandleExceptionAsync(httpContext.Response, ex);
@@ -45,7 +43,8 @@ public sealed class ExceptionMiddleware(
     private Task HandleExceptionAsync(HttpResponse response, Exception exception)
     {
         response.ContentType = "application/problem+json";
-        _exceptionHandler.Response = response;
-        return _exceptionHandler.HandleExceptionAsync(exception);
+        // Her request için yeni instance — thread-safe
+        var handler = new HttpExceptionHandler { Response = response };
+        return handler.HandleExceptionAsync(exception);
     }
 }

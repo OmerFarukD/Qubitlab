@@ -37,7 +37,7 @@ public static class ModelBuilderExtensions
 
                 modelBuilder.Entity(entityType.ClrType)
                     .HasIndex(nameof(IAuditableEntity.CreatedAt))
-                    .HasDatabaseName($"IX_{entityType.GetTableName()}_CreatedTime");
+                    .HasDatabaseName($"IX_{entityType.GetTableName()}_CreatedAt");
             }
 
             if (typeof(ISoftDeletable).IsAssignableFrom(entityType.ClrType))

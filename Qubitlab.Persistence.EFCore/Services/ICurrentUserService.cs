@@ -1,36 +1,47 @@
-﻿using System.Security.Claims;
+using System.Security.Claims;
 using Microsoft.AspNetCore.Http;
+using Qubitlab.Abstractions.Security;
 
 namespace Qubitlab.Persistence.EFCore.Services;
 
-public interface ICurrentUserService
-{
-    string? UserId { get; }
-
-    string? Username { get; }
-    
-    bool IsAuthenticated { get; }
-}
-
-public class CurrentUserService : ICurrentUserService
+public class DefaultCurrentUserService : ICurrentUserService
 {
     private readonly IHttpContextAccessor _httpContextAccessor;
 
-    public CurrentUserService(IHttpContextAccessor httpContextAccessor)
+    public DefaultCurrentUserService(IHttpContextAccessor httpContextAccessor)
     {
         _httpContextAccessor = httpContextAccessor;
     }
 
-    public string? UserId =>
-        _httpContextAccessor.HttpContext?.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value
-        ?? _httpContextAccessor.HttpContext?.User?.FindFirst("sub")?.Value
-        ?? _httpContextAccessor.HttpContext?.User?.FindFirst("uid")?.Value;
-
-    public string? Username =>
-        _httpContextAccessor.HttpContext?.User?.FindFirst(ClaimTypes.Name)?.Value
-        ?? _httpContextAccessor.HttpContext?.User?.FindFirst("preferred_username")?.Value
-        ?? _httpContextAccessor.HttpContext?.User?.Identity?.Name;
+    private ClaimsPrincipal? User => _httpContextAccessor.HttpContext?.User;
 
     public bool IsAuthenticated =>
-        _httpContextAccessor.HttpContext?.User?.Identity?.IsAuthenticated ?? false;
+        User?.Identity?.IsAuthenticated ?? false;
+
+    public string? UserId =>
+        User?.FindFirst(ClaimTypes.NameIdentifier)?.Value
+        ?? User?.FindFirst("sub")?.Value
+        ?? User?.FindFirst("uid")?.Value;
+
+    public string? Username =>
+        User?.FindFirst(ClaimTypes.Name)?.Value
+        ?? User?.FindFirst("preferred_username")?.Value
+        ?? User?.Identity?.Name;
+
+    public string? Email =>
+        User?.FindFirst(ClaimTypes.Email)?.Value
+        ?? User?.FindFirst("email")?.Value;
+
+    public IReadOnlyList<string> Roles =>
+        User?.Claims
+            .Where(c => c.Type == ClaimTypes.Role)
+            .Select(c => c.Value)
+            .ToList().AsReadOnly()
+        ?? [];
+
+    public bool IsInRole(string role) =>
+        User?.IsInRole(role) ?? false;
+
+    public string? GetClaim(string claimType) =>
+        User?.FindFirst(claimType)?.Value;
 }

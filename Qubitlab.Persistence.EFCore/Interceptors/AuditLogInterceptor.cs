@@ -3,10 +3,9 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Diagnostics;
-using Microsoft.EntityFrameworkCore.Metadata;       // GetTableName() — RelationalEntityTypeExtensions
-
+using Microsoft.EntityFrameworkCore.Metadata;
+using Qubitlab.Abstractions.Security;
 using Qubitlab.Persistence.EFCore.Entities;
-using Qubitlab.Persistence.EFCore.Services;
 
 namespace Qubitlab.Persistence.EFCore.Interceptors;
 
@@ -155,9 +154,7 @@ public class AuditLogInterceptor : SaveChangesInterceptor
             "CreatedBy",
             "CreatedAt",
             "UpdatedBy",
-            "UpdatedAt",
-            "CreatedTime",
-            "UpdatedTime"
+            "UpdatedAt"
         };
 
         return !excludedProperties.Contains(property.Metadata.Name);

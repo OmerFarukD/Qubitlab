@@ -141,9 +141,13 @@ public class UnitOfWork<TContext> : IUnitOfWork where TContext : DbContext
 
     public void Dispose()
     {
-        _currentTransaction?.Dispose();
-        _context?.Dispose();
+        Dispose(true);
+        GC.SuppressFinalize(this);
     }
 
-
+    protected virtual void Dispose(bool disposing)
+    {
+        if (!disposing) return;
+        _currentTransaction?.Dispose();
+    }
 }

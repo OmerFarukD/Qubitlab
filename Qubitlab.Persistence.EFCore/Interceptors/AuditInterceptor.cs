@@ -1,7 +1,7 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
+using Qubitlab.Abstractions.Security;
 using Qubitlab.Persistence.EFCore.Entities;
-using Qubitlab.Persistence.EFCore.Services;
 
 namespace Qubitlab.Persistence.EFCore.Interceptors;
 
@@ -43,30 +43,24 @@ public class AuditInterceptor : SaveChangesInterceptor
             switch (entry.State)
             {
                 case EntityState.Added:
-                    // Yeni kayıt eklenirken
                     entry.Entity.CreatedBy = currentUser;
                     entry.Entity.CreatedAt = DateTime.UtcNow;
                     break;
 
                 case EntityState.Modified:
-               
                     entry.Entity.UpdatedBy = currentUser;
                     entry.Entity.UpdatedAt = DateTime.UtcNow;
-                    
-         
                     entry.Property(nameof(IAuditableEntity.CreatedBy)).IsModified = false;
                     entry.Property(nameof(IAuditableEntity.CreatedAt)).IsModified = false;
                     break;
 
                 case EntityState.Deleted:
-              
                     if (entry.Entity is ISoftDeletable softDeletable)
                     {
                         entry.State = EntityState.Modified;
                         softDeletable.IsDeleted = true;
                         softDeletable.DeletedTime = DateTime.UtcNow;
                         softDeletable.DeletedBy = currentUser;
-                        
                         entry.Entity.UpdatedBy = currentUser;
                         entry.Entity.UpdatedAt = DateTime.UtcNow;
                     }
@@ -74,12 +68,13 @@ public class AuditInterceptor : SaveChangesInterceptor
             }
         }
     }
+
     private string GetCurrentUser()
     {
         if (_currentUserService.IsAuthenticated)
         {
-            return _currentUserService.UserId 
-                   ?? _currentUserService.Username 
+            return _currentUserService.UserId
+                   ?? _currentUserService.Username
                    ?? "System";
         }
 
