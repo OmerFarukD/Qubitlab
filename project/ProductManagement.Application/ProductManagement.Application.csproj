@@ -1,0 +1,24 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net10.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\..\Qubitlab.Application\Qubitlab.Application.csproj" />
+      <ProjectReference Include="..\..\Qubitlab.CrossCuttingConcerns\Qubitlab.CrossCuttingConcerns.csproj" />
+      <ProjectReference Include="..\..\Qubitlab.Identity\Qubitlab.Identity.csproj" />
+      <ProjectReference Include="..\..\Qubitlab.Persistence.EFCore\Qubitlab.Persistence.EFCore.csproj" />
+      <ProjectReference Include="..\..\Qubitlab.Security\Qubitlab.Security.csproj" />
+      <ProjectReference Include="..\ProductManagement.Domain\ProductManagement.Domain.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="12.0.0" />
+      <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="12.1.1" />
+      <PackageReference Include="MediatR" Version="12.5.0" />
+    </ItemGroup>
+
+</Project>
