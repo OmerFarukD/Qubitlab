@@ -1,5 +1,6 @@
 using System.Text.Json;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using Qubitlab.Persistence.EFCore.Entities;
 using Qubitlab.Persistence.EFCore.Logging;
 using Serilog.Debugging;
@@ -19,40 +20,37 @@ namespace Qubitlab.Logging.EFCore;
 /// logları bellekte biriktirip periyodik batch olarak yazar — çok daha verimli.
 /// </para>
 /// <para>
-/// <b>Neden IDbContextFactory?</b><br/>
-/// Serilog sinks singleton yaşam döngüsüne sahiptir. DbContext ise Scoped'dur.
-/// Scoped DbContext'i singleton'dan çekemeyiz.
-/// <see cref="IDbContextFactory{TContext}"/> her batch için yeni, kısa ömürlü
-/// bir DbContext instance'ı oluşturur — doğru yaklaşım budur.
+/// <b>Neden IServiceScopeFactory?</b><br/>
+/// Serilog sinks singleton yaşam döngüsüne sahiptir. DbContext ise Scoped'dır.
+/// Singleton'dan doğrudan Scoped bir servis çözülemez.
+/// <see cref="IServiceScopeFactory"/> (kendisi Singleton) ile her batch için
+/// yeni bir scope oluşturulur ve bu scope içerisinden <c>TContext</c> güvenle
+/// çözümlenir. Böylece <c>ICurrentUserService</c> gibi Scoped bağımlılıklar
+/// da doğru şekilde enjekte edilir.
 /// </para>
 /// </remarks>
 /// <typeparam name="TContext">
-/// Kullanılacak DbContext tipi. <see cref="IHasAppLogs"/> implement etmelidir.
+/// Kullanılacak DbContext tipi. <see cref="IHasAppLogs"/> implement etmeli.
 /// </typeparam>
 public sealed class EfCoreLogSink<TContext> : IBatchedLogEventSink
     where TContext : DbContext, IHasAppLogs
 {
-    private readonly IDbContextFactory<TContext> _contextFactory;
+    private readonly IServiceScopeFactory _scopeFactory;
     private readonly EfCoreSinkOptions _options;
 
     public EfCoreLogSink(
-        IDbContextFactory<TContext> contextFactory,
+        IServiceScopeFactory scopeFactory,
         EfCoreSinkOptions options)
     {
-        _contextFactory = contextFactory;
-        _options        = options;
+        _scopeFactory = scopeFactory;
+        _options      = options;
     }
 
-    /// <summary>
-    /// Biriktirilen log batch'ini DB'ye yazar.
-    /// Serilog tarafından periyodik olarak çağrılır.
-    /// </summary>
     public async Task EmitBatchAsync(IEnumerable<LogEvent> batch)
     {
         var batchList = batch.ToList();
         if (batchList.Count == 0) return;
 
-        // Minimum level filtresi
         var filtered = batchList
             .Where(e => e.Level >= _options.MinimumLevel)
             .ToList();
@@ -64,19 +62,15 @@ public sealed class EfCoreLogSink<TContext> : IBatchedLogEventSink
             try
             {
                 await WriteBatchAsync(filtered);
-                return; // başarılı → döndür
+                return;
             }
             catch (Exception ex) when (attempt < _options.RetryCount)
             {
-                // Son deneme değilse bekle ve tekrar dene
-                // (ana uygulamaya exception sızdırılmaz)
                 await Task.Delay(_options.RetryDelay);
-                _ = ex; // suppress
+                _ = ex;
             }
             catch
             {
-                // Tüm denemeler başarısız → logu yut, uygulamayı etkileme
-                // Serilog'un SelfLog mekanizmasını kullan (stderr'e yazar)
                 SelfLog.WriteLine(
                     "[EfCoreLogSink] Batch yazılamadı. {0} kayıt kaybedildi.",
                     filtered.Count);
@@ -85,19 +79,15 @@ public sealed class EfCoreLogSink<TContext> : IBatchedLogEventSink
         }
     }
 
-    /// <summary>
-    /// Batch başarısız olduğunda çağrılır. Serilog pipeline'ını bozmaz.
-    /// </summary>
     public Task OnEmptyBatchAsync() => Task.CompletedTask;
-
-    // ── Private: asıl yazma işlemi ───────────────────────────────
 
     private async Task WriteBatchAsync(List<LogEvent> events)
     {
-        // Her batch için taze, kısa ömürlü bir DbContext
-        await using var context = await _contextFactory.CreateDbContextAsync();
+        await using var scope = _scopeFactory.CreateAsyncScope();
 
+        var context = scope.ServiceProvider.GetRequiredService<TContext>();
         var entries = events.Select(MapToEntry).ToList();
+
         await context.AppLogs.AddRangeAsync(entries);
         await context.SaveChangesAsync();
     }
@@ -119,9 +109,6 @@ public sealed class EfCoreLogSink<TContext> : IBatchedLogEventSink
         };
     }
 
-    // ── Yardımcı metodlar ────────────────────────────────────────
-
-    /// <summary>Serilog property değerini string olarak çeker.</summary>
     private static string? GetProperty(LogEvent logEvent, string name)
     {
         if (logEvent.Properties.TryGetValue(name, out var value))
@@ -129,12 +116,8 @@ public sealed class EfCoreLogSink<TContext> : IBatchedLogEventSink
         return null;
     }
 
-    /// <summary>
-    /// Tüm Serilog property'lerini (bilinen özel alanlar hariç) JSON'a dönüştürür.
-    /// </summary>
     private static string? SerializeProperties(LogEvent logEvent)
     {
-        // Zaten ayrı kolonda saklanan alanları çıkar — tekrarı önle
         var excluded = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
         {
             "CorrelationId", "UserId", "MachineName"

@@ -20,8 +20,8 @@ public static class EfCoreLoggingExtensions
     /// <b>Ön koşul:</b>
     /// <list type="bullet">
     ///   <item>Kullanıcının DbContext'i <see cref="IHasAppLogs"/> implement etmeli</item>
-    ///   <item>DI'ya <c>IDbContextFactory&lt;TContext&gt;</c> kayıtlı olmalı
-    ///     (<c>services.AddDbContextFactory&lt;AppDbContext&gt;(...)</c>)</item>
+    ///   <item>DI'ya <c>TContext</c> kayıtlı olmalı
+    ///     (<c>services.AddDbContext&lt;AppDbContext&gt;(...)</c>)</item>
     ///   <item>Migration'da <c>builder.ConfigureAppLogs()</c> çağrılmış olmalı</item>
     /// </list>
     /// </para>
@@ -46,14 +46,12 @@ public static class EfCoreLoggingExtensions
     {
         return hostBuilder.UseSerilog((_, serviceProvider, loggerConfig) =>
         {
-            // Mevcut konfigürasyona EF Core sink'i ekle
-            // (UseQubitlabSerilog'un kurduğu Serilog config'ine ek olarak yazılır)
             AddEfCoreSink<TContext>(loggerConfig, serviceProvider, configure);
         }, writeToProviders: false);
     }
 
     /// <summary>
-    /// Varolan bir <see cref="LoggerConfiguration"/>'a EF Core sink ekler.
+    /// Varolan bir <see cref="LoggerConfiguration"/>a EF Core sink ekler.
     /// </summary>
     /// <remarks>
     /// <c>UseQubitlabSerilog</c>'dan sonra çağrılan ikinci bir <c>UseSerilog</c>
@@ -81,13 +79,10 @@ public static class EfCoreLoggingExtensions
         var options = new EfCoreSinkOptions();
         configure?.Invoke(options);
 
-        // IDbContextFactory<TContext> DI'dan al
-        var factory = serviceProvider.GetRequiredService<IDbContextFactory<TContext>>();
+        var scopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
 
-        // Asıl sink
-        var sink = new EfCoreLogSink<TContext>(factory, options);
+        var sink = new EfCoreLogSink<TContext>(scopeFactory, options);
 
-        // PeriodicBatchingSink — sink'i batch'e sarar
         var batchingSink = new PeriodicBatchingSink(sink, new PeriodicBatchingSinkOptions
         {
             BatchSizeLimit = options.BatchSizeLimit,

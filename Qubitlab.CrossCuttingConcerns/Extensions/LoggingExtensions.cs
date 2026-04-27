@@ -21,7 +21,7 @@ public static class LoggingExtensions
     /// </remarks>
     public static IServiceCollection AddQubitlabCorrelation(this IServiceCollection services)
     {
-        services.AddScoped<ICorrelationIdProvider, HttpCorrelationIdProvider>();
+        services.AddSingleton<ICorrelationIdProvider, HttpCorrelationIdProvider>();
         return services;
     }
 

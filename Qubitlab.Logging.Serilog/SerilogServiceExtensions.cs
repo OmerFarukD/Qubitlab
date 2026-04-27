@@ -51,12 +51,12 @@ public static class SerilogServiceExtensions
         // ISensitiveDataMasker
         services.AddSingleton<ISensitiveDataMasker, SensitiveDataMasker>();
 
-        // Enricher'lar — Scoped: her HTTP request'i bağımsız context alır
+        // Enricher'lar — Singleton: IHttpContextAccessor üzerinden per-request okuma yapar
         if (options.EnrichWithCorrelationId)
-            services.AddScoped<CorrelationIdEnricher>();
+            services.AddSingleton<CorrelationIdEnricher>();
 
         if (options.EnrichWithCurrentUser)
-            services.AddScoped<CurrentUserEnricher>();
+            services.AddSingleton<CurrentUserEnricher>();
 
         return services;
     }

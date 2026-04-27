@@ -17,8 +17,6 @@ public class UserConfiguration<TUser> : IEntityTypeConfiguration<TUser>
     {
         builder.ToTable("Users");
 
-        builder.HasKey(u => u.Id);
-
         builder.Property(u => u.FullName)
             .IsRequired()
             .HasMaxLength(150);

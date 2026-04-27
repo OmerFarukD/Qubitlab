@@ -38,4 +38,5 @@ public static class ClaimsPrincipalExtensions
     /// <summary>Custom claim'i key ile döner.</summary>
     public static string? GetClaim(this ClaimsPrincipal principal, string claimType)
         => principal.FindFirst(claimType)?.Value;
+    
 }

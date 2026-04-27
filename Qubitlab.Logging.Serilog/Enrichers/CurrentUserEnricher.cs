@@ -1,43 +1,35 @@
-using Qubitlab.Abstractions.Security;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Http;
 using Serilog.Core;
 using Serilog.Events;
 
 namespace Qubitlab.Logging.Serilog.Enrichers;
 
-/// <summary>
-/// Her log event'e kimliği doğrulanmış kullanıcı bilgilerini ekler.
-/// </summary>
-/// <remarks>
-/// <see cref="ICurrentUserService"/> üzerinden kullanıcı bilgilerine erişir.
-/// Eklenen property'ler:
-/// <list type="bullet">
-///   <item><c>UserId</c> — kullanıcının benzersiz kimliği</item>
-///   <item><c>UserEmail</c> — kullanıcının e-posta adresi</item>
-/// </list>
-/// Kullanıcı oturum açmamışsa hiçbir property eklenmez.
-/// </remarks>
 internal sealed class CurrentUserEnricher : ILogEventEnricher
 {
-    private readonly ICurrentUserService _currentUser;
+    private readonly IHttpContextAccessor _httpContextAccessor;
 
-    public CurrentUserEnricher(ICurrentUserService currentUser)
-        => _currentUser = currentUser;
+    public CurrentUserEnricher(IHttpContextAccessor httpContextAccessor)
+        => _httpContextAccessor = httpContextAccessor;
 
     public void Enrich(LogEvent logEvent, ILogEventPropertyFactory propertyFactory)
     {
-        if (!_currentUser.IsAuthenticated)
+        var user = _httpContextAccessor.HttpContext?.User;
+        if (user?.Identity?.IsAuthenticated != true)
             return;
 
-        if (_currentUser.UserId is not null)
-        {
-            logEvent.AddPropertyIfAbsent(
-                propertyFactory.CreateProperty("UserId", _currentUser.UserId));
-        }
+        var userId = user.FindFirst(ClaimTypes.NameIdentifier)?.Value
+                     ?? user.FindFirst("sub")?.Value;
 
-        if (_currentUser.Email is not null)
-        {
+        if (userId is not null)
             logEvent.AddPropertyIfAbsent(
-                propertyFactory.CreateProperty("UserEmail", _currentUser.Email));
-        }
+                propertyFactory.CreateProperty("UserId", userId));
+
+        var email = user.FindFirst(ClaimTypes.Email)?.Value
+                    ?? user.FindFirst("email")?.Value;
+
+        if (email is not null)
+            logEvent.AddPropertyIfAbsent(
+                propertyFactory.CreateProperty("UserEmail", email));
     }
 }

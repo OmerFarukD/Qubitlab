@@ -18,11 +18,17 @@
 
     <ItemGroup>
         <ProjectReference Include="..\Qubitlab.Abstractions\Qubitlab.Abstractions.csproj" />
+        <ProjectReference Include="..\Qubitlab.CrossCuttingConcerns\Qubitlab.CrossCuttingConcerns.csproj" />
+        <ProjectReference Include="..\Qubitlab.Security\Qubitlab.Security.csproj" />
     </ItemGroup>
 
     <ItemGroup>
 
+        <PackageReference Include="FluentValidation" Version="12.1.1" />
+
         <PackageReference Include="MediatR" Version="12.5.0" />
+
+        <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.3.9" />
 
         <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="10.0.0" />
         <PackageReference Include="Microsoft.Extensions.Options" Version="10.0.0" />
